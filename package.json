@@ -1,9 +1,36 @@
 {
-  "name": "hardhat-project",
+  "name": "univ3-farms",
+  "version": "1.0.0",
+  "description": "Uni V3 Farms",
+  "main": "index.js",
+  "scripts": {
+    "lint:sol": "solhint \"contracts/**/*.sol\"",
+    "prettier": "prettier --write \"contracts/**/*.sol\" \"test/**/*.js\"",
+    "build": "npm run compile",
+    "compile": "npx hardhat compile",
+    "coverage": "npx hardhat coverage --network hardhat",
+    "deploy:hardhat": "hardhat deploy --deploy-scripts ./deploy/hardhat",
+    "deploy:remote": "hardhat deploy --deploy-scripts ./deploy/remote --network",
+    "test": "npx hardhat test",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arbi-s/univ3-farms"
+  },
+  "author": "David Lee",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Arbi-s/univ3-farms/issues"
+  },
+  "homepage": "https://github.com/Arbi-s/univ3-farms#readme",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-etherscan": "^2.1.8",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@openzeppelin/contracts": "^4.6.0",
+    "@openzeppelin/contracts-upgradeable": "^4.6.0",
+    "@openzeppelin/hardhat-upgrades": "^1.19.0",
     "chai": "^4.3.4",
     "dotenv": "^10.0.0",
     "eslint": "^7.32.0",
@@ -16,10 +43,16 @@
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.5.1",
     "hardhat": "^2.7.0",
+    "hardhat-deploy": "^0.11.10",
     "hardhat-gas-reporter": "^1.0.4",
+    "husky": "^8.0.1",
+    "mocha": "^10.0.0",
     "prettier": "^2.5.0",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
     "solhint": "^3.3.6",
     "solidity-coverage": "^0.7.17"
+  },
+  "dependencies": {
+    "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers"
   }
 }
