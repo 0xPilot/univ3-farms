@@ -62,6 +62,11 @@ contract UniV3Vault is IUniV3Vault, Initializable, ERC20Upgradeable, ReentrancyG
   /// @param amount1 Amount of token 1 deposited to the position
   event Rerange(int24 tickLower, int24 tickUpper, uint256 amount0, uint256 amount1);
 
+  /// @notice Emitted when the tick range multiplier is chagned
+  /// @param by The address that chagned the tick range multiplier
+  /// @param tickRangeMultiplier The tick range multiplier set
+  event TickRangeMultiplerChanged(address indexed by, int24 tickRangeMultiplier);
+
   /// @notice Emitted when the Vault admin is updated
   /// @param by The old admin address
   /// @param admin The new admin address
@@ -236,6 +241,13 @@ contract UniV3Vault is IUniV3Vault, Initializable, ERC20Upgradeable, ReentrancyG
     );
 
     emit Rerange(tickLower, tickUpper, amount0, amount1);
+  }
+
+  /// @inheritdoc IUniV3Vault
+  function setTickRangeMultiplier(int24 newTickRangeMultiplier) external override onlyAdminOrManager {
+    tickRangeMultiplier = newTickRangeMultiplier;
+
+    emit TickRangeMultiplerChanged(msg.sender, newTickRangeMultiplier);
   }
 
   /// @notice Pull in tokens from sender. Called to `msg.sender` after minting liquidity to a position from IUniswapV3Pool#mint.

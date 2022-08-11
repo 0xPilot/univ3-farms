@@ -68,4 +68,9 @@ interface IUniV3Vault {
   /// @dev Finds base position for imbalanced token
   /// mints all amounts to this position(including earned fees)
   function rerange() external;
+
+  /// @notice Set the tick range multiplier
+  /// @dev Change the tick range where the liquidity is added
+  /// @param newTickRangeMultiplier new tick range multiplier
+  function setTickRangeMultiplier(int24 newTickRangeMultiplier) external;
 }
