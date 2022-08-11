@@ -1,5 +1,5 @@
 const { expect } = require("chai");
-const { ethers, upgrades, network } = require("hardhat");
+const { ethers, network } = require("hardhat");
 const { BigNumber, constants } = require("ethers");
 const { FeeAmount } = require("@uniswap/v3-sdk");
 const {
@@ -60,8 +60,8 @@ describe("UniV3 Vault", function () {
     token1 = deployedContracts.pool.token1;
 
     // Deploy UniV3 Vault contract
-    const vaultFactory = await ethers.getContractFactory("UniV3Vault");
-    vault = await upgrades.deployProxy(vaultFactory, [admin.address, pool.address, 1, "TCR<>WETH", "TCR<>WETH"]);
+    const VaultFactory = await ethers.getContractFactory("UniV3Vault");
+    vault = await VaultFactory.deploy(admin.address, pool.address, 1, "TCR<>WETH", "TCR<>WETH");
 
     // Mint and approve tokens
     for (let token of [token0, token1]) {

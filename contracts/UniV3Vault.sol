@@ -2,13 +2,12 @@
 pragma solidity =0.7.6;
 pragma abicoder v2;
 
-import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./libraries/PoolActions.sol";
 import "./interfaces/IUniV3Vault.sol";
 
@@ -18,11 +17,11 @@ import "hardhat/console.sol";
  * @title UniV3Vault
  * @notice Uniswap V3 Vault implementation
  */
-contract UniV3Vault is IUniV3Vault, Initializable, ERC20Upgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable {
+contract UniV3Vault is IUniV3Vault, ERC20, ReentrancyGuard, Pausable {
   using LowGasSafeMath for uint256;
   using LowGasSafeMath for uint160;
   using LowGasSafeMath for uint128;
-  using SafeERC20Upgradeable for IERC20Upgradeable;
+  using SafeERC20 for IERC20;
   using PoolActions for IUniswapV3Pool;
   using PoolVariables for IUniswapV3Pool;
 
@@ -128,17 +127,13 @@ contract UniV3Vault is IUniV3Vault, Initializable, ERC20Upgradeable, ReentrancyG
     _;
   }
 
-  function initialize(
+  constructor(
     address _admin,
     address _pool,
     int24 _tickRangeMultiplier,
     string memory _name,
     string memory _symbol
-  ) public initializer {
-    __ERC20_init(_name, _symbol);
-    __ReentrancyGuard_init();
-    __Pausable_init();
-
+  ) ERC20(_name, _symbol) {
     // initialize the params
     admin = _admin;
     pool = IUniswapV3Pool(_pool);
@@ -270,12 +265,12 @@ contract UniV3Vault is IUniV3Vault, Initializable, ERC20Upgradeable, ReentrancyG
 
   /// @dev Amount of token0 held as unused balance.
   function _balance0() internal view returns (uint256) {
-    return IERC20Upgradeable(token0).balanceOf(address(this)).sub(protocolFees0);
+    return IERC20(token0).balanceOf(address(this)).sub(protocolFees0);
   }
 
   /// @dev Amount of token1 held as unused balance.
   function _balance1() internal view returns (uint256) {
-    return IERC20Upgradeable(token1).balanceOf(address(this)).sub(protocolFees1);
+    return IERC20(token1).balanceOf(address(this)).sub(protocolFees1);
   }
 
   /// @dev collects fees from the pool
@@ -296,8 +291,8 @@ contract UniV3Vault is IUniV3Vault, Initializable, ERC20Upgradeable, ReentrancyG
     );
 
     // Calculate protocol fees
-    uint256 earnedProtocolFees0 = SafeMathUpgradeable.div(collect0.mul(protocolFee), GLOBAL_DIVISIONER);
-    uint256 earnedProtocolFees1 = SafeMathUpgradeable.div(collect1.mul(protocolFee), GLOBAL_DIVISIONER);
+    uint256 earnedProtocolFees0 = SafeMath.div(collect0.mul(protocolFee), GLOBAL_DIVISIONER);
+    uint256 earnedProtocolFees1 = SafeMath.div(collect1.mul(protocolFee), GLOBAL_DIVISIONER);
     protocolFees0 = protocolFees0.add(earnedProtocolFees0);
     protocolFees1 = protocolFees1.add(earnedProtocolFees1);
     totalFees0 = totalFees0.add(collect0);
@@ -318,10 +313,10 @@ contract UniV3Vault is IUniV3Vault, Initializable, ERC20Upgradeable, ReentrancyG
   ) internal {
     if (_payer == address(this)) {
       // pay with tokens already in the contract
-      IERC20Upgradeable(_token).safeTransfer(_recipient, _value);
+      IERC20(_token).safeTransfer(_recipient, _value);
     } else {
       // pull payment
-      IERC20Upgradeable(_token).safeTransferFrom(_payer, _recipient, _value);
+      IERC20(_token).safeTransferFrom(_payer, _recipient, _value);
     }
   }
 
